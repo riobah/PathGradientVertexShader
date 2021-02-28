@@ -171,9 +171,9 @@ vector_float4 components(NSColor *color) {
                                length:sizeof(_viewportSize)
                               atIndex:AAPLVertexInputIndexViewportSize];
 
-        [renderEncoder setVertexBytes:&_time
-                               length:sizeof(_time)
-                              atIndex:AAPLVertexInputIndexTime];
+        [renderEncoder setFragmentBytes:&_time
+                                 length:sizeof(_time)
+                                atIndex:AAPLFragmentInputIndexTime];
 
         // Draw the triangle.
         [renderEncoder drawPrimitives:MTLPrimitiveTypeLineStrip

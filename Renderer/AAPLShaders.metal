@@ -53,21 +53,17 @@ struct RasterizerData
     // and then passes the interpolated value to the fragment shader for each
     // fragment in the triangle.
     float4 color;
-    
-    float time;
 };
 
 vertex RasterizerData
 vertexShader(uint vertexID [[vertex_id]],
              constant AAPLVertex *vertices [[buffer(AAPLVertexInputIndexVertices)]],
-             constant vector_uint2 *viewportSizePointer [[buffer(AAPLVertexInputIndexViewportSize)]],
-             constant float *time [[buffer(AAPLVertexInputIndexTime)]])
+             constant vector_uint2 *viewportSizePointer [[buffer(AAPLVertexInputIndexViewportSize)]])
 {
     RasterizerData out;
 
     out.position = float4(vertices[vertexID].position.xy, 0, 1);
     out.color = vertices[vertexID].color;
-    out.time = *time;
 
     return out;
 }
@@ -79,12 +75,14 @@ typedef enum {
 } BONAnimationType;
 
 fragment float4 fragmentShader(RasterizerData in [[stage_in]],
+                               constant float *_time [[buffer(AAPLFragmentInputIndexTime)]],
                                float2 uv[[point_coord]])
 {
+    float time = *_time;
     const BONAnimationType animation = BONAnimationTypeDecreasingBrightness;
     
     float3 hsb = rgb2hsb(in.color.rgb);
-    float pct = fract(1 - in.time / 4.0);
+    float pct = fract(1 - time / 4.0);
     hsb.x = fmod(hsb.x + pct, 1.0);
     
     switch(animation) {
